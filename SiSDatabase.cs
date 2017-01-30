@@ -31,9 +31,9 @@ namespace StudentInformationSystem
         private void Initialize()
         {
             server = "localhost";
-            database = "StudentInformationSystem";
-            uid = "root";
-            password = "";
+            database = "database";
+            uid = "username";
+            password = "password";
             string connectionString;
             connectionString = "SERVER=" + server + ";" + "DATABASE=" +
             database + ";" + "UID=" + uid + ";" + "PASSWORD=" + password + ";";
