@@ -1,4 +1,4 @@
-# hello-world
+# The Playground
 A hello world repository for ideas and random stuff.
 
 My name is Ryan and I like to code things; things like games, apps, and websites (like this one!)
