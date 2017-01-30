@@ -135,10 +135,16 @@ namespace StudentInformationSystem
         }
 
         //Update statement
-        public void Update()
+        public void Update(string table, string[] column, string[] values, string condition)
         {
-            string query = "UPDATE tableinfo SET name='Joe', age='22' WHERE name='John Smith'";
-
+            string set_values = "";
+            for(int i = 0; i <= column.Length; i++)
+            {
+                set_values = column[i]+"="+values[i]+", ";
+            }
+            
+            string query = "UPDATE "+table+" SET "+set_values+" WHERE "+condition;
+            
             //Open connection
             if (this.OpenConnection() == true)
             {
@@ -158,9 +164,9 @@ namespace StudentInformationSystem
         }
 
         //Delete statement
-        public void Delete()
+        public void Delete(string table, string condition)
         {
-            string query = "DELETE FROM tableinfo WHERE name='John Smith'";
+            string query = "DELETE FROM "+table+" WHERE "+condition;
 
             if (this.OpenConnection() == true)
             {
@@ -171,15 +177,26 @@ namespace StudentInformationSystem
         }
 
         //Select statement
-        public List<string>[] Select()
+        public List<string>[] Select(string table, string[] select_col)
         {
-            string query = "SELECT * FROM tableinfo";
-
+            string col = "";
+            int i = 1;
+            foreach(string c in select_col)
+            {
+                if(i == select_col.Length){
+                    col += c+", ";
+                } else {
+                    col += c+" ";   
+                }
+            }
+            
+            string query = "SELECT "+col+" FROM "+table;
+            
             //Create a list to store the result
-            List<string>[] list = new List<string>[3];
-            list[0] = new List<string>();
-            list[1] = new List<string>();
-            list[2] = new List<string>();
+            List<string>[] list = new List<string>[select_col.Length];
+            for(i = 0; i <= select_col.Length; i++){
+                list[i] = new List<string>();   
+            }
 
             //Open connection
             if (this.OpenConnection() == true)
@@ -192,9 +209,9 @@ namespace StudentInformationSystem
                 //Read the data and store them in the list
                 while (dataReader.Read())
                 {
-                    list[0].Add(dataReader["id"] + "");
-                    list[1].Add(dataReader["name"] + "");
-                    list[2].Add(dataReader["age"] + "");
+                    for(i = 0; i <= select_col.Length; i++){
+                        list[i].Add(dataReader[select_col[i]] + "");  
+                    }
                 }
 
                 //close Data Reader
@@ -213,9 +230,13 @@ namespace StudentInformationSystem
         }
 
         //Count statement
-        public int Count()
+        public int Count(string table, string select_col, bool distinct)
         {
-            string query = "SELECT Count(*) FROM tableinfo";
+            if(distinct){
+                string query = "SELECT Count(DISTINCT "select_col+") FROM "+table;
+            } else {
+                string query = "SELECT Count("+select_col+") FROM "+table;   
+            }
             int Count = -1;
 
             //Open Connection
