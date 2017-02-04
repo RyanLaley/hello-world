@@ -1,10 +1,11 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using MySql.Data.MySqlClient;
 using System.Windows.Forms;
+using System.Data;
 
 namespace StudentInformationSystem
 {
@@ -31,12 +32,12 @@ namespace StudentInformationSystem
         private void Initialize()
         {
             server = "localhost";
-            database = "database";
-            uid = "username";
-            password = "password";
+            database = "StudentInformationSystem";
+            uid = "root";
+            password = "";
             string connectionString;
             connectionString = "SERVER=" + server + ";" + "DATABASE=" +
-            database + ";" + "UID=" + uid + ";" + "PASSWORD=" + password + ";";
+            database + ";" + "UID=" + uid + ";" + "PASSWORD=" + password + ";Convert Zero Datetime=True";
 
             connection = new MySqlConnection(connectionString);
         }
@@ -138,13 +139,13 @@ namespace StudentInformationSystem
         public void Update(string table, string[] column, string[] values, string condition)
         {
             string set_values = "";
-            for(int i = 0; i <= column.Length; i++)
+            for (int i = 0; i <= column.Length; i++)
             {
-                set_values = column[i]+"="+values[i]+", ";
+                set_values = column[i] + "=" + values[i] + ", ";
             }
-            
-            string query = "UPDATE "+table+" SET "+set_values+" WHERE "+condition;
-            
+
+            string query = "UPDATE " + table + " SET " + set_values + " WHERE " + condition;
+
             //Open connection
             if (this.OpenConnection() == true)
             {
@@ -166,7 +167,7 @@ namespace StudentInformationSystem
         //Delete statement
         public void Delete(string table, string condition)
         {
-            string query = "DELETE FROM "+table+" WHERE "+condition;
+            string query = "DELETE FROM " + table + " WHERE " + condition;
 
             if (this.OpenConnection() == true)
             {
@@ -177,27 +178,28 @@ namespace StudentInformationSystem
         }
 
         //Select statement
-        public List<string>[] Select(string table, string[] select_col)
+        public DataTable Select(string table, string[] columns)
         {
-            string col = "";
-            int i = 1;
-            foreach(string c in select_col)
-            {
-                if(i == select_col.Length){
-                    col += c+", ";
-                } else {
-                    col += c+" ";   
-                }
-            }
-            
-            string query = "SELECT "+col+" FROM "+table;
-            
-            //Create a list to store the result
-            List<string>[] list = new List<string>[select_col.Length];
-            for(i = 0; i <= select_col.Length; i++){
-                list[i] = new List<string>();   
-            }
+            DataTable dt = new DataTable();
+            int number_of_columns = 0;
+            string query = "";
 
+            if (columns.Length == 1 && columns[0] == "*")
+            {
+                query = "SELECT * FROM " + table;
+                number_of_columns = 1;
+            } else
+            {
+                //Create a list to store the result
+                query = "SELECT ";
+                for (int i = 0; i < columns.Length; i++)
+                {
+                    query += columns[i] + ", ";
+                    number_of_columns++;
+                }
+                query += " FROM " + table;
+            }
+            
             //Open connection
             if (this.OpenConnection() == true)
             {
@@ -206,12 +208,11 @@ namespace StudentInformationSystem
                 //Create a data reader and Execute the command
                 MySqlDataReader dataReader = cmd.ExecuteReader();
 
-                //Read the data and store them in the list
-                while (dataReader.Read())
+                if (dataReader.HasRows)
                 {
-                    for(i = 0; i <= select_col.Length; i++){
-                        list[i].Add(dataReader[select_col[i]] + "");  
-                    }
+                    dt.Load(dataReader);
+                    int row_num = dt.Rows.Count;
+                    string test = dt.Rows[0][1].ToString();
                 }
 
                 //close Data Reader
@@ -221,21 +222,25 @@ namespace StudentInformationSystem
                 this.CloseConnection();
 
                 //return list to be displayed
-                return list;
+                return dt ;
             }
             else
             {
-                return list;
+                return dt;
             }
         }
 
         //Count statement
         public int Count(string table, string select_col, bool distinct)
         {
-            if(distinct){
-                string query = "SELECT Count(DISTINCT "select_col+") FROM "+table;
-            } else {
-                string query = "SELECT Count("+select_col+") FROM "+table;   
+            string query = "";
+            if (distinct)
+            {
+                query = "SELECT Count(DISTINCT "+select_col+ ") FROM " + table;
+            }
+            else
+            {
+                query = "SELECT Count(" + select_col + ") FROM " + table;
             }
             int Count = -1;
 
@@ -259,6 +264,7 @@ namespace StudentInformationSystem
             }
         }
 
+
         //Backup
         public void Backup()
         {
@@ -275,6 +281,14 @@ namespace StudentInformationSystem
             bool i = OpenConnection();
             CloseConnection();
             return i;
+        }
+    }
+
+    class Record
+    {
+        public Record()
+        {
+
         }
     }
 }
