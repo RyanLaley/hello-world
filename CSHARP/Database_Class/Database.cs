@@ -31,10 +31,11 @@ namespace StudentInformationSystem
         //Initialize values
         private void Initialize()
         {
+            //CHANGE THESE SETTINGS FOR YOUR DATABASE
             server = "localhost";
-            database = "StudentInformationSystem";
-            uid = "root";
-            password = "";
+            database = "DBNAME";
+            uid = "USERNAME";
+            password = "PASSWORD";
             string connectionString;
             connectionString = "SERVER=" + server + ";" + "DATABASE=" +
             database + ";" + "UID=" + uid + ";" + "PASSWORD=" + password + ";Convert Zero Datetime=True";
