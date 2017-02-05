@@ -9,7 +9,7 @@ using System.Data;
 
 namespace StudentInformationSystem
 {
-    class SiSDatabase
+    class Database
     {
         /*
          * Class for the database connection and handling. 
@@ -23,7 +23,7 @@ namespace StudentInformationSystem
         private string password;
 
         //Constructor
-        public SiSDatabase()
+        public Database()
         {
             Initialize();
         }
